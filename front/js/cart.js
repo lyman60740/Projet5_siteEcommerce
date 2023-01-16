@@ -54,6 +54,7 @@ fetch("http://localhost:3000/api/products/")
         pQuantity.textContent = "Qté : ";
 
         const input = document.createElement('input');
+        input.addEventListener('input', handleQuantityChange);
         input.type = 'number';
         input.className = 'itemQuantity';
         input.name = 'itemQuantity';
@@ -89,20 +90,23 @@ fetch("http://localhost:3000/api/products/")
         article.appendChild(divContent);
 
         document.querySelector('#cart__items').appendChild(article);
-        
-        sum =+ arrayPanier[i].quantite * priceCatch;
-        
           }
           
           document.querySelector('#totalQuantity').innerText = arrayPanier.length;
-          let totalPrice = 0;
-          for (let i = 0; i < arrayPanier.length; i++) {
-            console.log(sum)
-            
-            
+          
+          function sumOfPrice(){
+            let totalPrice = 0;
+            for (let i = 0; i < arrayPanier.length; i++) {
+    
+              totalPrice = totalPrice + (arrayPanier[i].quantite * (valeur.find(x => x._id === arrayPanier[i].id).price));
+              
+            }
+
+            document.querySelector("#totalPrice").innerHTML = totalPrice;
           }
+          sumOfPrice();
           console.log(localStorage.getItem('monTableau'))
-          document.querySelector("#totalPrice").innerHTML = totalPrice;
+         
           
         var deleteButtons = document.querySelectorAll('.deleteItem');
         
@@ -125,10 +129,12 @@ fetch("http://localhost:3000/api/products/")
         }
         const inputElements = document.querySelectorAll('.itemQuantity');
 inputElements.forEach(inputElement => {
-    inputElement.addEventListener('input', handleQuantityChange);
+    inputElement.addEventListener('change', handleQuantityChange);
 });
 
 function handleQuantityChange(event) {
+  sumOfPrice();
+  
     const inputElement = event.target;
     const id = inputElement.closest('.cart__item').dataset.id;
     const color = inputElement.closest('.cart__item').dataset.color;
@@ -144,7 +150,87 @@ function handleQuantityChange(event) {
     localStorage.setItem('monTableau', JSON.stringify(arrayPanier));
     // On pourra également mettre à jour l'affichage de la page web pour refléter les modifications de quantité ici
 }
+document.querySelector('.cart__order__form').addEventListener('submit', (event) => {
+  event.preventDefault(); // Empêche la soumission du formulaire
+  const firstName = event.target.firstName.value;
+  const lastName = event.target.lastName.value;
+  const address = event.target.address.value;
+  const city = event.target.city.value;
+  const email = event.target.email.value;
+  
+   // Objet de stockage des données 
+   const contact = {
+    firstName: `${firstName}`,
+    lastName:`${lastName}`,
+    email: `${email}`,
+    city: `${city}`,
+    address: `${address}`
+};
+console.log(contact)
+});
+
+// Regex :
+document.querySelector('#email').addEventListener('blur', (event) => {
+  const email = event.target.value;
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!regex.test(email)) {
+      event.target.classList.add('error');
+      document.querySelector('#emailErrorMsg').textContent = 'Entrez une adresse mail valide';
+  } else {
+      event.target.classList.remove('error');
+      document.querySelector('#emailErrorMsg').textContent = '';
+  }
+});
+  
+document.querySelector('#firstName').addEventListener('blur', (event) => {
+  const firstName = event.target.value;
+  const regexFirstName = /^[a-zA-Z]{2,}$/;
+  if (!regexFirstName.test(firstName)) {
+      event.target.classList.add('error');
+      document.querySelector('#firstNameErrorMsg').textContent = 'Entrez un prénom valide';
+    } else {
+    event.target.classList.remove('error');
+    document.querySelector('#firstNameErrorMsg').textContent = '';
+    }
+    });
     
+    document.querySelector('#lastName').addEventListener('blur', (event) => {
+    const lastName = event.target.value;
+    const regexLastName = /^[a-zA-Z]{2,}$/;
+    if (!regexLastName.test(lastName)) {
+    event.target.classList.add('error');
+    document.querySelector('#lastNameErrorMsg').textContent = 'Entrez un nom valide';
+    } else {
+    event.target.classList.remove('error');
+    document.querySelector('#lastNameErrorMsg').textContent = '';
+    }
+    });
+    
+    document.querySelector('#address').addEventListener('blur', (event) => {
+    const address = event.target.value;
+    const regexAddress = /^[a-zA-Z0-9\s]{5,}$/;
+    if (!regexAddress.test(address)) {
+    event.target.classList.add('error');
+    document.querySelector('#addressErrorMsg').textContent = 'Entrez une adresse valide';
+    } else {
+    event.target.classList.remove('error');
+    document.querySelector('#addressErrorMsg').textContent = '';
+    }
+    });
+    
+    document.querySelector('#city').addEventListener('blur', (event) => {
+    const city = event.target.value;
+    const regexCity = /^[a-zA-Z\s]{5,}$/;
+    if (!regexCity.test(city)) {
+    event.target.classList.add('error');
+    document.querySelector('#cityErrorMsg').textContent = 'Entrez une ville valide';
+    } else {
+    event.target.classList.remove('error');
+    document.querySelector('#cityErrorMsg').textContent = '';
+    }
+    });
+
+   
   })
   .catch(function(err) {
     // Une erreur est survenue
