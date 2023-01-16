@@ -11,7 +11,7 @@ fetch("http://localhost:3000/api/products/")
   .then(function(value) {
 
     valeur = value;
-    
+    let sum = 0;
     for(var i = 0; i < arrayPanier.length; i += 1) {
         imageCatch = valeur.find(x => x._id === arrayPanier[i].id).imageUrl;
         nameCatch = valeur.find(x => x._id === arrayPanier[i].id).name;
@@ -89,29 +89,62 @@ fetch("http://localhost:3000/api/products/")
         article.appendChild(divContent);
 
         document.querySelector('#cart__items').appendChild(article);
-        console.log(arrayPanier)
+        
+        sum =+ arrayPanier[i].quantite * priceCatch;
+        
           }
+          
+          document.querySelector('#totalQuantity').innerText = arrayPanier.length;
+          let totalPrice = 0;
+          for (let i = 0; i < arrayPanier.length; i++) {
+            console.log(sum)
+            
+            
+          }
+          console.log(localStorage.getItem('monTableau'))
+          document.querySelector("#totalPrice").innerHTML = totalPrice;
+          
         var deleteButtons = document.querySelectorAll('.deleteItem');
         
         for (let i = 0; i < deleteButtons.length; i++){
-          localStorage.setItem('monTableau', JSON.stringify(arrayPanier));
+          
           deleteButtons[i].addEventListener('click', function(e){
             console.log('target ='+e.target);
             idDelete = e.target.closest('.cart__item').dataset.id;
             idColor = e.target.closest('.cart__item').dataset.color;
             console.log(idDelete);
             
-            var filteredArray = arrayPanier.filter(function(item) {
+            arrayPanier = arrayPanier.filter(function(item) {
               return !(item.id === idDelete && item.couleur === idColor) ;
             });
             e.target.closest('.cart__item').remove();
-           localStorage.setItem('monTableau', JSON.stringify(filteredArray));
-           const newArray = JSON.parse(localStorage.getItem('monTableau'));
+           localStorage.setItem('monTableau', JSON.stringify(arrayPanier));
+           
             console.log(localStorage.getItem('monTableau'));
           })
         }
-        
-        
+        const inputElements = document.querySelectorAll('.itemQuantity');
+inputElements.forEach(inputElement => {
+    inputElement.addEventListener('input', handleQuantityChange);
+});
+
+function handleQuantityChange(event) {
+    const inputElement = event.target;
+    const id = inputElement.closest('.cart__item').dataset.id;
+    const color = inputElement.closest('.cart__item').dataset.color;
+    const newQuantity = inputElement.value;
+  console.log(arrayPanier)
+    // Mise à jour de la quantité de l'élément dans arrayPanier
+    for (let i = 0; i < arrayPanier.length; i++) {
+        if (arrayPanier[i].id === id && arrayPanier[i].couleur === color) {
+            arrayPanier[i].quantite = parseInt(newQuantity);
+            break;
+        }
+    }
+    localStorage.setItem('monTableau', JSON.stringify(arrayPanier));
+    // On pourra également mettre à jour l'affichage de la page web pour refléter les modifications de quantité ici
+}
+    
   })
   .catch(function(err) {
     // Une erreur est survenue
